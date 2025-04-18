@@ -29,10 +29,11 @@ table {
     border-collapse: collapse;
     table-layout: fixed;
     position: absolute;
-    background-color: #fff;
+    background-color: #84a59d;
     border: 2px solid #84a59d;
     box-shadow: 2px 2px 1px 0px #436159;
-    border-radius: 5px;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .month{
@@ -62,8 +63,6 @@ th {
     color: #fff; */
     /* font-weight: normal; */
 }
-
-
 
 
 td {
@@ -242,33 +241,39 @@ function calendar(widget, data)
     /* 6 setmanes per cobrir totes les posiblitats
      *  Quedaria mes consistent alhora de mostrar molts mesos 
      *  en una quadricula */
-    for(var s = 0; s < 6; s++)
-    {
-        var fila = document.createElement('tr');
+    for (var s = 0; s < 6; s++) {
+    var fila = document.createElement('tr');
+    var allOutsideMonth = true;
 
-        for(var d = 1; d < 8; d++)
-        {
-	    var cela = document.createElement('td');
-	    var span = document.createElement('span');
+    for (var d = 1; d < 8; d++) {
+        var cela = document.createElement('td');
+        var span = document.createElement('span');
 
-	    cela.appendChild(span);
+        span.innerHTML = actual.getDate();
+        cela.appendChild(span);
 
-            span.innerHTML = actual.getDate();
-
-            if(actual.getMonth() !== data.getMonth())
-                cela.className = 'fora';
-
-            /* Si es avui el decorem */
-            if(data.getDate() == actual.getDate() &&
-	       data.getMonth() == actual.getMonth())
-		cela.className = 'avui';
-
-	    actual.setDate(actual.getDate()+1);
-            fila.appendChild(cela);
+        // Ako je dan izvan meseca — fora
+        if (actual.getMonth() !== data.getMonth()) {
+            cela.className = 'fora';
+        } else {
+            allOutsideMonth = false; // Bar jedan dan je iz ovog meseca
         }
 
-        e.appendChild(fila);
+        // Ako je danasnji datum
+        if (data.getDate() == actual.getDate() &&
+            data.getMonth() == actual.getMonth()) {
+            cela.className = 'avui';
+        }
+
+        actual.setDate(actual.getDate() + 1);
+        fila.appendChild(cela);
     }
+
+    // Ako su svi dani u ovom redu izvan meseca — nema potrebe za redom
+    if (allOutsideMonth) break;
+
+    e.appendChild(fila);
+}
 
     setTimeout(function() {
         e.className = 'actiu';
